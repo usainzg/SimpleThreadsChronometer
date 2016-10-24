@@ -9,7 +9,6 @@ public class RelojThread extends Thread {
 	private int seg;
 	private boolean pause = false;
 	private boolean restart = false;
-	
 
 	public boolean isRestarted() {
 		return restart;
@@ -23,88 +22,98 @@ public class RelojThread extends Thread {
 		super(name);
 		this.etiqueta = etiqueta;
 	}
-	
+
 	public JLabel getEtiqueta() {
 		return etiqueta;
 	}
-	
+
 	public void setEtiqueta(final JLabel etiqueta) {
 		this.etiqueta = etiqueta;
 	}
-	
+
 	public int getMin() {
 		return min;
 	}
-	
+
 	public void setMin(final int min) {
 		this.min = min;
 	}
-	
+
 	public int getSeg() {
 		return seg;
 	}
-	
+
 	public void setSeg(final int seg) {
 		this.seg = seg;
 	}
+
 	public boolean isPaused() {
 		return pause;
 	}
-	
+
 	public void setPaused(final boolean pause) {
 		this.pause = pause;
 	}
 
 	@Override
 	public void run() {
-		
+
 		super.run();
-		
+
 		resetThread();
-		
+
 		try {
-			
+
 			while (true) {
-				
-					if(seg == 59){
-						min += 1;
-						seg = 0;
-						if(min == 60)
-							min = 0;
-					}else{
-						seg += 1;
-					}
-					
-					while( isPaused() ){
-						
-						Thread.sleep(1);
-						
-					}
-					
-					if( isRestarted() ){
-						resetThread();
-						restart = false;
-					}
-					if(seg < 10)
-						this.etiqueta.setText(min + ":0" + seg);
-					else
-						this.etiqueta.setText(min + ":" + seg);
-					Thread.sleep(1000);
+
+				if (seg == 59) {
+					min = incrementMin(min);
+					seg = 0;
+					if (min == 60)
+						min = 0;
+				} else {
+					seg = incrementSeg(seg);
+				}
+
+				while (isPaused()) {
+
+					Thread.sleep(1);
+
+				}
+
+				if (isRestarted()) {
+					resetThread();
+					restart = false;
+				}
+				printClock(min, seg);
+				Thread.sleep(1000);
 			}
 		} catch (InterruptedException e) {
 			resetThread();
 			System.out.println("El hilo " + getName() + " ha terminado");
 		}
-		
+
 	}
-	
-	
-	public void resetThread(){
+
+	public void resetThread() {
 		min = 0;
 		seg = 0;
 		this.etiqueta.setText(min + "0:0" + seg);
 	}
 
-	
-	
+	public void printClock(final int min, final int seg) {
+		if (seg < 10)
+			this.etiqueta.setText(min + ":0" + seg);
+		else
+			this.etiqueta.setText(min + ":" + seg);
+	}
+
+	public int incrementSeg(int seg) {
+		return seg += 1;
+	}
+
+	public int incrementMin(int min) {
+		return min += 1;
+	}
+
 }
